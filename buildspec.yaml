@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/c6h1p5f0)
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t my-first:$latest .
+      - docker tag myfirst-image:latest public.ecr.aws/c6h1p5f0/myfirst-image:latest
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push public.ecr.aws/c6h1p5f0/myfirst-image:latest
+      - echo Build completed on `date`
+
+env:
+  variables:
+    IMAGE_TAG: "latest"
+
+# You can define secret variables like AWS_ACCOUNT_ID in the CodeBuild project environment
+
